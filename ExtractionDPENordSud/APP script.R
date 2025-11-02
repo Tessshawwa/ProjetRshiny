@@ -28,7 +28,7 @@ library(httr)
 library(jsonlite)
 
 # --- Chargement des Données (Rétabli en .csv) ---
-data_file <- "df_nord_sud_COMBINE_COMPLET.csv"
+data_file <- "https://raw.githubusercontent.com/Tessshawwa/ProjetRshiny/refs/heads/main/ExtractionDPENordSud/df_nord_sud_COMBINE_COMPLET.csv?token=GHSAT0AAAAAADONAX5WJB5QI24ECA3CAIOG2IHQW7A"
 
 min_year_data <- 2021
 max_year_data <- 2025
