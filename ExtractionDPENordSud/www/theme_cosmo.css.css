@@ -1,0 +1,291 @@
+/* ========================================
+   THÈME VIBRANT COLORÉ (Cosmo)
+   Design joyeux et énergique
+   ======================================== */
+
+/* Couleurs principales - Vibrant */
+body {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 25%, #48dbfb 50%, #ff9ff3 75%, #54a0ff 100%) !important;
+    background-size: 400% 400% !important;
+    animation: gradientShift 15s ease infinite !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* En-tête principal - Vibrant */
+.main-header {
+    background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%) !important;
+    border-bottom: 5px solid #feca57 !important;
+    box-shadow: 0 5px 25px rgba(255, 107, 107, 0.5) !important;
+}
+
+.main-header .logo {
+    background-color: #c44569 !important;
+    border-right: 3px solid #feca57 !important;
+}
+
+.main-header .navbar {
+    background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 50%, #c44569 100%) !important;
+}
+
+/* Sidebar - Vibrant avec dégradé arc-en-ciel */
+.main-sidebar {
+    background: linear-gradient(180deg, #ff6b6b 0%, #feca57 25%, #48dbfb 50%, #ff9ff3 75%, #54a0ff 100%) !important;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.3) !important;
+}
+
+.sidebar-menu > li > a {
+    color: white !important;
+    font-weight: 600 !important;
+    transition: all 0.4s ease !important;
+    border-left: 5px solid transparent !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+    background: rgba(255,255,255,0.1) !important;
+    margin: 5px !important;
+    border-radius: 10px !important;
+}
+
+.sidebar-menu > li > a:hover,
+.sidebar-menu > li.active > a {
+    background: linear-gradient(135deg, #feca57 0%, #ff6b6b 100%) !important;
+    border-left: 5px solid white !important;
+    color: white !important;
+    transform: translateX(10px) scale(1.05) !important;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important;
+}
+
+/* Contenu principal - Vibrant */
+.content-wrapper {
+    background: linear-gradient(135deg, #ffeaa7 0%, #dfe6e9 50%, #a29bfe 100%) !important;
+    min-height: 100vh !important;
+}
+
+/* Boxes - Vibrant avec bordures colorées */
+.box {
+    border-radius: 15px !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2) !important;
+    border: 4px solid transparent !important;
+    background: white !important;
+    transition: all 0.4s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.box::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff) !important;
+}
+
+.box:hover {
+    transform: translateY(-8px) rotate(1deg) !important;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
+}
+
+.box-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%) !important;
+    color: white !important;
+    border-radius: 11px 11px 0 0 !important;
+    padding: 20px !important;
+}
+
+.box-title {
+    font-weight: 800 !important;
+    font-size: 20px !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+    text-transform: uppercase !important;
+}
+
+.box.box-primary > .box-header {
+    background: linear-gradient(135deg, #54a0ff 0%, #48dbfb 100%) !important;
+}
+
+.box.box-info > .box-header {
+    background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%) !important;
+}
+
+.box.box-warning > .box-header {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%) !important;
+}
+
+.box.box-success > .box-header {
+    background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%) !important;
+}
+
+.box.box-danger > .box-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+}
+
+/* Boutons - Vibrant */
+.btn {
+    border-radius: 25px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+    transition: all 0.4s ease !important;
+    border: 3px solid transparent !important;
+    padding: 12px 30px !important;
+}
+
+.btn:hover {
+    transform: translateY(-3px) scale(1.1) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #54a0ff 0%, #48dbfb 100%) !important;
+    color: white !important;
+    border-color: #0abde3 !important;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0abde3 0%, #54a0ff 100%) !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%) !important;
+    color: white !important;
+    border-color: #ee5a6f !important;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%) !important;
+}
+
+/* Value Boxes - Vibrant avec animations */
+.small-box {
+    border-radius: 20px !important;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.2) !important;
+    transition: all 0.4s ease !important;
+    border: 4px solid white !important;
+}
+
+.small-box:hover {
+    transform: scale(1.1) rotate(-2deg) !important;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.35) !important;
+}
+
+.small-box.bg-blue {
+    background: linear-gradient(135deg, #54a0ff 0%, #48dbfb 100%) !important;
+}
+
+.small-box.bg-red {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+}
+
+.small-box.bg-yellow {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%) !important;
+}
+
+/* Inputs - Vibrant */
+.form-control, .selectize-input {
+    border: 3px solid #ff6b6b !important;
+    border-radius: 15px !important;
+    transition: all 0.3s ease !important;
+    background: linear-gradient(135deg, #fff 0%, #ffeaa7 100%) !important;
+    font-weight: 600 !important;
+}
+
+.form-control:focus, .selectize-input.focus {
+    border-color: #48dbfb !important;
+    box-shadow: 0 0 20px rgba(72, 219, 251, 0.6) !important;
+    background: white !important;
+    transform: scale(1.02) !important;
+}
+
+/* Labels - Vibrant */
+label {
+    color: #ff6b6b !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+/* Sélecteur de thème - Vibrant */
+#theme_selector {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%) !important;
+    color: white !important;
+    border: 3px solid white !important;
+    border-radius: 15px !important;
+    font-weight: 700 !important;
+}
+
+/* Tables - Vibrant */
+.dataTables_wrapper {
+    background: white !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15) !important;
+}
+
+table.dataTable thead th {
+    background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%) !important;
+    color: white !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+}
+
+table.dataTable tbody tr {
+    transition: all 0.3s ease !important;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #ffeaa7 !important;
+    transform: scale(1.02) !important;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.2) !important;
+}
+
+/* Sliders - Vibrant */
+.irs--shiny .irs-bar {
+    background: linear-gradient(90deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%) !important;
+}
+
+.irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
+    background: #ff6b6b !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+/* Texte général */
+h1, h2, h3, h4, h5, h6 {
+    color: #ff6b6b !important;
+    font-weight: 800 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Animations supplémentaires */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.small-box:hover {
+    animation: pulse 0.6s ease-in-out !important;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+    width: 12px !important;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, #ffeaa7 0%, #dfe6e9 100%) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff6b6b 0%, #feca57 100%) !important;
+    border-radius: 10px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #feca57 0%, #48dbfb 100%) !important;
+}

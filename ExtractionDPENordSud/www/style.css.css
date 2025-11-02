@@ -1,0 +1,35 @@
+/* Custom styles.css */
+/* Styles pour la barre latérale gauche (Sidebar) si besoin */
+/* .sidebar-menu > li > a { ... } */
+
+/* 1. Assurez-vous que l'espace principal derrière les box est sombre */
+.skin-black .content-wrapper,
+.skin-black .right-side {
+    background-color: #111; /* Couleur de fond sombre pour le thème Darkly */
+    color: #ccc;
+}
+
+/* 2. Style des box (panneaux) dans le thème sombre */
+.skin-black .box {
+    color: #ccc; /* Texte clair dans les box sombres */
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5); /* Ombre plus visible sur fond sombre */
+}
+
+/* 3. Style pour les box avec status primaire */
+.skin-black .box.box-solid.box-primary {
+    border-color: #007bff;
+}
+
+/* 4. Correction des couleurs de base des boîtes pour qu'elles s'harmonisent */
+.skin-black .box[class*="bg-"] > .box-header,
+.skin-black .box[class*="bg-"] {
+    /* Forcer une couleur de fond légèrement plus claire que le body pour le contraste */
+    background-color: #222 !important; 
+    border-color: #333 !important;
+}
+
+/* 5. Si vous avez des boîtes d'informations (Context/info), ajustez-les aussi */
+.skin-black .box-info {
+    background-color: #222 !important;
+    border-color: #00bcd4 !important; /* Couleur du statut Info */
+}
