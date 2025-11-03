@@ -1,6 +1,6 @@
 # ==============================================================================
 # APPLICATION SHINY POUR LA COMPARAISON DPE NORD (59) vs SUD (66)
-# VERSION V6.4 (Optimisée - Étiquettes Lille/PO)
+# VERSION V6.5 (Optimisée - Thème Fonctionnel)
 # ==============================================================================
 
 library(readr)
@@ -54,7 +54,6 @@ if (file.exists(data_file)) {
     }
     if ("code_postal_ban" %in% names(df)) df$code_postal_ban <- as.character(df$code_postal_ban)
     
-    # <--- MODIFIÉ ICI : Nouvelles étiquettes
     if("code_departement_ban" %in% names(df)) {
       print("Renommage des codes départements...")
       df <- df %>%
@@ -65,7 +64,6 @@ if (file.exists(data_file)) {
                  TRUE ~ code_departement_ban
                ))
     }
-    # <--- FIN MODIFICATION
     
     required_cols <- c("date_reception_dpe", "etiquette_dpe", "code_departement_ban",
                        "type_source", "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban", "conso_5_usages_par_m2_ep", "surface_habitable_logement")
@@ -159,12 +157,10 @@ type_source_choices <- if(nrow(df) > 0 && "type_source" %in% names(df) && is.fac
   stats::setNames(unique_sources, unique_sources)
 } else { c("Existant (dpe03)" = "Existant (dpe03)", "Neuf (dpe02)" = "Neuf (dpe02)") }
 
-# <--- MODIFIÉ ICI : Fallback avec les nouvelles étiquettes
 departement_choices <- if(nrow(df) > 0 && "code_departement_ban" %in% names(df) && is.factor(df$code_departement_ban) && length(levels(droplevels(df$code_departement_ban))) > 0) {
   unique_depts <- levels(droplevels(df$code_departement_ban))
   stats::setNames(unique_depts, paste0(unique_depts))
 } else { c("59 - Lille (Nord)"="59 - Lille (Nord)", "66 - Pyrénées Orientales (Sud)"="66 - Pyrénées Orientales (Sud)") } 
-# <--- FIN MODIFICATION
 
 etiquette_choices <- if(nrow(df) > 0 && "etiquette_dpe" %in% names(df) && is.factor(df$etiquette_dpe)) {
   levels(df$etiquette_dpe)
@@ -199,30 +195,29 @@ themes_disponibles <- list(
 
 # ==============================================================================
 # INTERFACE UTILISATEUR (UI)
-# (Inchangée)
 # ==============================================================================
 
 ui <- fluidPage(
   shinyjs::useShinyjs(), 
   
+  # *** JAVASCRIPT SIMPLIFIÉ ***
   shinyjs::extendShinyjs(text = "
-        shinyjs.changeSkin = function(skin) {
-            $('body').removeClass().addClass('skin-' + skin);
-        };
-        
-        shinyjs.reloadCSS = function(href) {
-            var link = document.getElementById('theme_css');
-            if (link) {
-                var newHref = href + '?t=' + new Date().getTime();
-                link.setAttribute('href', newHref);
-            }
-        };
-    ", functions = c("changeSkin", "reloadCSS")),
+    shinyjs.changeSkin = function(skin) {
+        // Enlever toutes les classes skin-*
+        $('body').removeClass(function(index, className) {
+            return (className.match(/\\bskin-\\S+/g) || []).join(' ');
+        });
+        // Ajouter la nouvelle classe skin
+        $('body').addClass('skin-' + skin);
+        console.log('Thème changé: skin-' + skin);
+    };
+  ", functions = c("changeSkin")),
   
-  # --- THIS IS THE NEW, CORRECT BLOCK ---
+  # *** CSS TOUJOURS CHARGÉ ***
   tags$head(
-    tags$link(id="theme_css", rel = "stylesheet", type = "text/css", href = "")
+    tags$link(id="theme_css", rel = "stylesheet", type = "text/css", href = "style.css")
   ),
+  
   div(class = "pull-right", shinyauthr::logoutUI(id = "logout")),
   if(!show_load_error) {
     shinyauthr::loginUI(id = "login", title = "Connexion - Analyse DPE", 
@@ -433,22 +428,15 @@ server <- function(input, output, session) {
     }
   })
   
-  # --- Gestion du Thème ---
+  # *** GESTION DU THÈME SIMPLIFIÉE ***
   observeEvent(input$theme_selector, {
     req(input$theme_selector)
     
-    selected_skin_name <- themes_disponibles[[input$theme_selector]] # "skin-blue" or "skin-black"
-    selected_skin_js <- gsub("skin-", "", selected_skin_name)       # "blue" or "black"
+    selected_skin_name <- themes_disponibles[[input$theme_selector]] # "skin-blue" ou "skin-black"
+    selected_skin_js <- gsub("skin-", "", selected_skin_name)        # "blue" ou "black"
     
-    # Change le skin (bleu ou noir)
+    # Change uniquement la classe du body
     shinyjs::js$changeSkin(selected_skin_js)
-    
-    # Charge ou décharge le fichier style.css (le patch pour le thème sombre)
-    if (selected_skin_name == "skin-black") {
-      shinyjs::js$reloadCSS("style.css") # Charge le patch
-    } else {
-      shinyjs::js$reloadCSS("") # Décharge le patch
-    }
     
     showNotification(
       paste("Thème changé:", input$theme_selector),
@@ -540,9 +528,7 @@ server <- function(input, output, session) {
       group_by(code_departement_ban) %>%
       mutate(Proportion = n / sum(n))
     
-    # <--- MODIFIÉ ICI : Étiquettes de couleur mises à jour
-    dpt_colors <- c("59 - Lille (Nord)" = "#3FA2F6", "66 - Pyrénées Orientales (Sud)" = "#FF7F50") # #FF7F50 est "Coral"
-    # <--- FIN MODIFICATION
+    dpt_colors <- c("59 - Lille (Nord)" = "#3FA2F6", "66 - Pyrénées Orientales (Sud)" = "#FF7F50")
     
     p <- ggplot(data_summary, aes(x = etiquette_dpe, y = Proportion, fill = code_departement_ban)) +
       geom_bar(stat = "identity", position = "dodge") +
@@ -609,15 +595,11 @@ server <- function(input, output, session) {
                                text = paste("Groupe:", Groupe, "<br>Mois:", format(Mois, "%Y-%m"), 
                                             "<br>N:", Effectif))) +
       geom_line(size = 1) + geom_point(size = 1.5) +
-      
-      # <--- MODIFIÉ ICI : Étiquettes de couleur mises à jour
-      scale_color_manual(values = c("59 - Lille (Nord) - Existant" = "#3FA2F6",               # Bleu clair
-                                    "66 - Pyrénées Orientales (Sud) - Existant" = "#FF7F50", # Corail
-                                    "59 - Lille (Nord) - Neuf" = "#1E90FF",                   # Bleu foncé
-                                    "66 - Pyrénées Orientales (Sud) - Neuf" = "#FF6347"),    # Corail foncé (Tomato)
+      scale_color_manual(values = c("59 - Lille (Nord) - Existant" = "#3FA2F6",
+                                    "66 - Pyrénées Orientales (Sud) - Existant" = "#FF7F50",
+                                    "59 - Lille (Nord) - Neuf" = "#1E90FF",
+                                    "66 - Pyrénées Orientales (Sud) - Neuf" = "#FF6347"),
                          name = "Groupe") +
-      # <--- FIN MODIFICATION
-      
       labs(title = paste("Évolution", input$choix_etiquette_evol), x = "Date", y = "Nb DPE") +
       theme_minimal(base_size = 10) +
       theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "bottom")
@@ -832,4 +814,3 @@ if (!show_load_error) {
     server = function(input, output, session){}
   )
 }
-

@@ -1,0 +1,297 @@
+/* ============================================
+   THÈME SOMBRE COMPLET POUR SHINY DASHBOARD
+   ============================================ */
+
+/* 1. Fond principal et couleur de texte */
+.skin-black .content-wrapper,
+.skin-black .right-side,
+.skin-black .main-sidebar,
+.skin-black .left-side {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+/* 2. Tous les types de box */
+.skin-black .box {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 3. En-têtes des box */
+.skin-black .box-header {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #444 !important;
+}
+
+.skin-black .box-header h3,
+.skin-black .box-header h4 {
+    color: #e0e0e0 !important;
+}
+
+/* 4. Corps des box */
+.skin-black .box-body {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+/* 5. Box avec statuts spécifiques */
+.skin-black .box.box-primary > .box-header {
+    background-color: #337ab7 !important;
+    color: #fff !important;
+}
+
+.skin-black .box.box-info > .box-header {
+    background-color: #5bc0de !important;
+    color: #fff !important;
+}
+
+.skin-black .box.box-success > .box-header {
+    background-color: #5cb85c !important;
+    color: #fff !important;
+}
+
+.skin-black .box.box-warning > .box-header {
+    background-color: #f0ad4e !important;
+    color: #fff !important;
+}
+
+.skin-black .box.box-danger > .box-header {
+    background-color: #d9534f !important;
+    color: #fff !important;
+}
+
+/* 6. Titres et textes */
+.skin-black h1, .skin-black h2, .skin-black h3, 
+.skin-black h4, .skin-black h5, .skin-black h6 {
+    color: #e0e0e0 !important;
+}
+
+.skin-black p, .skin-black li, .skin-black span {
+    color: #e0e0e0 !important;
+}
+
+.skin-black label {
+    color: #e0e0e0 !important;
+    font-weight: normal !important;
+}
+
+/* 7. Formulaires et inputs */
+.skin-black .form-control {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.skin-black .form-control:focus {
+    background-color: #3d3d3d !important;
+    border-color: #66afe9 !important;
+    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6) !important;
+}
+
+.skin-black input[type="text"],
+.skin-black input[type="number"],
+.skin-black select,
+.skin-black textarea {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+/* 8. Selectize (pour les dropdowns améliorés) */
+.skin-black .selectize-input {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.skin-black .selectize-dropdown {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.skin-black .selectize-dropdown-content {
+    background-color: #3d3d3d !important;
+}
+
+.skin-black .selectize-dropdown .option {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+}
+
+.skin-black .selectize-dropdown .option:hover,
+.skin-black .selectize-dropdown .active {
+    background-color: #4d4d4d !important;
+    color: #fff !important;
+}
+
+/* 9. Slider */
+.skin-black .irs {
+    color: #e0e0e0 !important;
+}
+
+.skin-black .irs-bar,
+.skin-black .irs-bar-edge {
+    background-color: #337ab7 !important;
+}
+
+.skin-black .irs-from,
+.skin-black .irs-to,
+.skin-black .irs-single {
+    background-color: #337ab7 !important;
+    color: #fff !important;
+}
+
+.skin-black .irs-grid-text {
+    color: #999 !important;
+}
+
+/* 10. Boutons */
+.skin-black .btn-default {
+    background-color: #4d4d4d !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
+}
+
+.skin-black .btn-default:hover {
+    background-color: #5d5d5d !important;
+}
+
+/* 11. DataTables */
+.skin-black .dataTables_wrapper {
+    color: #e0e0e0 !important;
+}
+
+.skin-black .dataTables_wrapper table {
+    color: #e0e0e0 !important;
+    background-color: #2d2d2d !important;
+}
+
+.skin-black .dataTables_wrapper table thead th {
+    background-color: #3d3d3d !important;
+    color: #e0e0e0 !important;
+    border-bottom: 2px solid #555 !important;
+}
+
+.skin-black .dataTables_wrapper table tbody tr {
+    background-color: #2d2d2d !important;
+}
+
+.skin-black .dataTables_wrapper table tbody tr:hover {
+    background-color: #3d3d3d !important;
+}
+
+.skin-black .dataTables_wrapper table tbody td {
+    border-top: 1px solid #444 !important;
+    color: #e0e0e0 !important;
+}
+
+.skin-black .dataTables_info,
+.skin-black .dataTables_length label,
+.skin-black .dataTables_filter label {
+    color: #e0e0e0 !important;
+}
+
+.skin-black .dataTables_paginate .paginate_button {
+    color: #e0e0e0 !important;
+    background-color: #3d3d3d !important;
+    border-color: #555 !important;
+}
+
+.skin-black .dataTables_paginate .paginate_button:hover {
+    background-color: #4d4d4d !important;
+    color: #fff !important;
+}
+
+.skin-black .dataTables_paginate .paginate_button.current {
+    background-color: #337ab7 !important;
+    color: #fff !important;
+}
+
+/* 12. Value Boxes */
+.skin-black .small-box {
+    color: #fff !important;
+}
+
+.skin-black .info-box {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+.skin-black .info-box-icon {
+    color: #fff !important;
+}
+
+.skin-black .info-box-text,
+.skin-black .info-box-number {
+    color: #e0e0e0 !important;
+}
+
+/* 13. Nav tabs */
+.skin-black .nav-tabs-custom {
+    background-color: #2d2d2d !important;
+}
+
+.skin-black .nav-tabs-custom > .nav-tabs > li > a {
+    color: #e0e0e0 !important;
+}
+
+.skin-black .nav-tabs-custom > .nav-tabs > li.active > a {
+    background-color: #2d2d2d !important;
+    color: #fff !important;
+}
+
+/* 14. Modals */
+.skin-black .modal-content {
+    background-color: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #555 !important;
+}
+
+.skin-black .modal-header {
+    background-color: #3d3d3d !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+.skin-black .modal-footer {
+    background-color: #2d2d2d !important;
+    border-top: 1px solid #555 !important;
+}
+
+.skin-black .close {
+    color: #e0e0e0 !important;
+    opacity: 0.8;
+}
+
+/* 15. Liens */
+.skin-black a {
+    color: #66afe9 !important;
+}
+
+.skin-black a:hover {
+    color: #8ec9ff !important;
+}
+
+/* 16. Horizontal rule */
+.skin-black hr {
+    border-top: 1px solid #444 !important;
+}
+
+/* 17. Radio buttons et checkboxes */
+.skin-black .radio label,
+.skin-black .checkbox label {
+    color: #e0e0e0 !important;
+}
+
+/* 18. Correction pour les graphiques Plotly */
+.skin-black .plotly {
+    background-color: #2d2d2d !important;
+}
+
+/* 19. Leaflet map (ne pas assombrir) */
+.skin-black .leaflet-container {
+    background-color: #fff !important;
+}
