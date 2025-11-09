@@ -56,7 +56,8 @@ if (file.exists(data_file)) {
     }
     
     required_cols <- c("date_reception_dpe", "etiquette_dpe", "code_departement_ban",
-                       "type_source", "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban", "conso_5_usages_par_m2_ep", "surface_habitable_logement")
+                       "type_source", "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban", 
+                       "conso_5_usages_par_m2_ep", "surface_habitable_logement")
     missing_cols <- required_cols[!required_cols %in% names(df)]
     
     if(length(missing_cols) > 0){
@@ -79,7 +80,9 @@ if (file.exists(data_file)) {
       
       if(sum(valid_coords) > 0) {
         tryCatch({
-          sf_data <- st_as_sf(df[valid_coords, ], coords = c("coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban"), crs = 2154, remove = FALSE)
+          sf_data <- st_as_sf(df[valid_coords, ], 
+                             coords = c("coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban"), 
+                             crs = 2154, remove = FALSE)
           sf_data_wgs84 <- st_transform(sf_data, crs = 4326)
           coords_wgs84 <- st_coordinates(sf_data_wgs84)
           df$latitude[valid_coords] <- coords_wgs84[, "Y"]
@@ -109,43 +112,56 @@ if (file.exists(data_file)) {
   df <- NULL
 }
 
-# Dataframe vide si erreur
 if (show_load_error || is.null(df) || nrow(df) == 0) {
   show_load_error <- TRUE
-  df <- data.frame(code_departement_ban=factor(),
-                   etiquette_dpe=factor(levels=c("A", "B", "C", "D", "E", "F", "G"), ordered=TRUE),
-                   date_reception_dpe=as.Date(character()),
-                   latitude=numeric(), longitude=numeric(),
-                   type_source = factor(),
-                   coordonnee_cartographique_x_ban=numeric(),
-                   coordonnee_cartographique_y_ban=numeric(),
-                   type_energie_principale_chauffage=character(),
-                   qualite_isolation_murs=character(),
-                   surface_habitable_logement=numeric(),
-                   conso_5_usages_par_m2_ep=numeric(),
-                   annee_construction=numeric(),
-                   nom_commune_ban=character(),
-                   type_batiment=character(),
-                   stringsAsFactors = FALSE, check.names = FALSE)
+  df <- data.frame(
+    code_departement_ban=factor(),
+    etiquette_dpe=factor(levels=c("A", "B", "C", "D", "E", "F", "G"), ordered=TRUE),
+    date_reception_dpe=as.Date(character()),
+    latitude=numeric(), 
+    longitude=numeric(),
+    type_source = factor(),
+    coordonnee_cartographique_x_ban=numeric(),
+    coordonnee_cartographique_y_ban=numeric(),
+    type_energie_principale_chauffage=character(),
+    qualite_isolation_murs=character(),
+    surface_habitable_logement=numeric(),
+    conso_5_usages_par_m2_ep=numeric(),
+    annee_construction=numeric(),
+    nom_commune_ban=character(),
+    type_batiment=character(),
+    stringsAsFactors = FALSE
+  )
   min_year_data <- 2021
   max_year_data <- 2025
 }
 
-type_source_choices <- if(nrow(df) > 0 && "type_source" %in% names(df) && is.factor(df$type_source) && length(levels(droplevels(df$type_source))) > 0) {
+type_source_choices <- if(nrow(df) > 0 && "type_source" %in% names(df) && is.factor(df$type_source) && 
+                          length(levels(droplevels(df$type_source))) > 0) {
   unique_sources <- levels(droplevels(df$type_source))
   stats::setNames(unique_sources, unique_sources)
-} else { c("Existant (dpe03)" = "Existant (dpe03)", "Neuf (dpe02)" = "Neuf (dpe02)") }
+} else { 
+  c("Existant (dpe03)" = "Existant (dpe03)", "Neuf (dpe02)" = "Neuf (dpe02)") 
+}
 
-departement_choices <- if(nrow(df) > 0 && "code_departement_ban" %in% names(df) && is.factor(df$code_departement_ban) && length(levels(droplevels(df$code_departement_ban))) > 0) {
+departement_choices <- if(nrow(df) > 0 && "code_departement_ban" %in% names(df) && 
+                          is.factor(df$code_departement_ban) && 
+                          length(levels(droplevels(df$code_departement_ban))) > 0) {
   unique_depts <- levels(droplevels(df$code_departement_ban))
   stats::setNames(unique_depts, paste0(unique_depts))
-} else { c("59 - Lille (Nord)"="59 - Lille (Nord)", "66 - Pyrénées Orientales (Sud)"="66 - Pyrénées Orientales (Sud)") } 
+} else { 
+  c("59 - Lille (Nord)"="59 - Lille (Nord)", "66 - Pyrénées Orientales (Sud)"="66 - Pyrénées Orientales (Sud)") 
+} 
 
 etiquette_choices <- if(nrow(df) > 0 && "etiquette_dpe" %in% names(df) && is.factor(df$etiquette_dpe)) {
   levels(df$etiquette_dpe)
-} else { c("A", "B", "C", "D", "E", "F", "G") }
+} else { 
+  c("A", "B", "C", "D", "E", "F", "G") 
+}
 
-numeric_cols <- names(df)[sapply(df, is.numeric) & !(names(df) %in% c("latitude", "longitude", "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban"))]
+numeric_cols <- names(df)[sapply(df, is.numeric) & 
+                         !(names(df) %in% c("latitude", "longitude", "coordonnee_cartographique_x_ban", 
+                                           "coordonnee_cartographique_y_ban"))]
 
 default_var_1 <- intersect("surface_habitable_logement", numeric_cols)[1]
 default_var_2 <- intersect("conso_5_usages_par_m2_ep", numeric_cols)[1]
@@ -157,7 +173,6 @@ if (is.na(default_var_2) && length(numeric_cols) == 1) default_var_2 <- numeric_
 app_data <- reactiveVal(df)
 rm(df) 
 
-# Auth
 user_base <- tibble::tibble(
   user = c("Monsieur svp", "user2"),
   password = sapply(c("mettez une bonne note", "pass2"), sodium::password_store),
@@ -550,3 +565,187 @@ server <- function(input, output, session) {
     
     data_plot <- data_plot %>% 
       filter(!is.na(type_energie_principale_chauffage) & type_energie_principale_chauffage != "") %>%
+      count(code_departement_ban, type_source, etiquette_dpe, type_energie_principale_chauffage, name = "Effectif") %>%
+      group_by(code_departement_ban, type_source, etiquette_dpe) %>%
+      mutate(Total_Groupe = sum(Effectif), 
+             Proportion = ifelse(Total_Groupe > 0, Effectif / Total_Groupe, 0)) %>%
+      arrange(desc(Effectif)) %>% 
+      slice_head(n = 3) %>%
+      ungroup() %>%
+      mutate(Proportion_text = scales::percent(Proportion, accuracy=1))
+    
+    if(nrow(data_plot) == 0) {
+      return(plotly_empty() %>% layout(title = "Aucune donnée disponible"))
+    }
+    
+    p <- ggplot(data_plot, aes(x = etiquette_dpe, y = Proportion, fill = type_energie_principale_chauffage,
+                               text = paste("Dpt:", code_departement_ban, "<br>Énergie:", 
+                                            type_energie_principale_chauffage, "<br>%:", Proportion_text))) +
+      geom_bar(stat = "identity", position = "fill") +
+      scale_y_continuous(labels = scales::percent) + 
+      labs(x = "Étiquette DPE", y = "%", fill = "Énergie") +
+      theme_minimal(base_size = 10) + 
+      theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5, face = "bold"))
+    
+    ggplotly(p, tooltip = "text") %>% layout(legend = list(orientation = "h", x = 0.1, y = -0.2))
+  })
+  
+  output$diag_empile_100_murs_plot <- renderPlotly({
+    data_plot <- filtered_data_tab2()
+    req(data_plot, nrow(data_plot) > 0, "qualite_isolation_murs" %in% names(data_plot))
+    
+    data_plot <- data_plot %>% 
+      filter(!is.na(qualite_isolation_murs) & qualite_isolation_murs != "") %>%
+      mutate(qualite_isolation_murs = factor(qualite_isolation_murs, 
+                                             levels = c("insuffisante", "moyenne", "bonne", "très bonne"), 
+                                             ordered = TRUE)) %>%
+      count(code_departement_ban, type_source, etiquette_dpe, qualite_isolation_murs, .drop = FALSE) %>%
+      group_by(code_departement_ban, type_source, etiquette_dpe) %>%
+      mutate(Total = sum(n), Proportion = ifelse(Total > 0, n / Total, 0)) %>% 
+      ungroup() %>%
+      mutate(Proportion_text = scales::percent(Proportion, accuracy=1))
+    
+    if(nrow(data_plot) == 0) {
+      return(plotly_empty() %>% layout(title = "Données non disponibles"))
+    }
+    
+    p <- ggplot(data_plot, aes(x = etiquette_dpe, y = Proportion, fill = qualite_isolation_murs,
+                               text = paste("Qualité:", qualite_isolation_murs, "<br>%:", Proportion_text))) +
+      geom_bar(stat = "identity", position = "fill") +
+      scale_fill_manual(values = c("insuffisante"="#FF5722", "moyenne"="#FFC107", 
+                                   "bonne"="#8BC34A", "très bonne"="#009688"), 
+                        name = "Qualité Murs", drop=FALSE) +
+      scale_y_continuous(labels = scales::percent) + 
+      labs(x = "Étiquette DPE", y = "%") +
+      theme_minimal(base_size = 10) + 
+      theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5, face = "bold"))
+    
+    ggplotly(p, tooltip = "text") %>% layout(legend = list(orientation = "h", x = 0.1, y = -0.2))
+  })
+  
+  output$coeff_cor_text <- renderText({
+    data_cor <- filtered_data_tab2()
+    req(data_cor, nrow(data_cor) > 1, input$variable1, input$variable2)
+    req(input$variable1 %in% names(data_cor), input$variable2 %in% names(data_cor))
+    
+    data_cor_clean <- data_cor %>% 
+      select(all_of(c(input$variable1, input$variable2))) %>% 
+      na.omit()
+    
+    if (input$filter_outliers && nrow(data_cor_clean) > 2) {
+      data_cor_clean <- data_cor_clean %>%
+        filter(abs(scale(.data[[input$variable1]])) < 3 & 
+                 abs(scale(.data[[input$variable2]])) < 3)
+    }
+    
+    if(nrow(data_cor_clean) < 2) return("Non calculable")
+    
+    correlation <- tryCatch(
+      cor(data_cor_clean[[input$variable1]], data_cor_clean[[input$variable2]]), 
+      error = function(e) NA
+    )
+    
+    if (is.na(correlation)) "Non calculable" else paste("Corrélation:", round(correlation, 2))
+  })
+  
+  output$nuage_plot <- renderPlotly({
+    data_plot <- filtered_data_tab2()
+    req(data_plot, nrow(data_plot) > 0, input$variable1, input$variable2)
+    req(input$variable1 %in% names(data_plot), input$variable2 %in% names(data_plot))
+    
+    data_plot_clean <- data_plot %>%
+      filter(is.finite(.data[[input$variable1]]) & is.finite(.data[[input$variable2]]))
+    
+    if (input$filter_outliers && nrow(data_plot_clean) > 2) {
+      data_plot_clean <- data_plot_clean %>%
+        filter(abs(scale(.data[[input$variable1]])) < 3 & 
+                 abs(scale(.data[[input$variable2]])) < 3)
+    }
+    
+    if(nrow(data_plot_clean) == 0) {
+      return(plotly_empty() %>% layout(title = "Aucune donnée"))
+    }
+    
+    p <- ggplot(data_plot_clean, aes(x = .data[[input$variable1]], y = .data[[input$variable2]])) +
+      geom_point(aes(color = etiquette_dpe, shape = type_source), alpha=0.6, size=1.5) +
+      scale_color_manual(values = c("A"="#008000", "B"="#50A000", "C"="#A0D000", 
+                                    "D"="#FFFF00", "E"="#FFC000", "F"="#FF8000", "G"="#FF0000"), 
+                         name="Étiquette", drop=FALSE) +
+      scale_shape_manual(values = c("Existant (dpe03)" = 16, "Neuf (dpe02)" = 17), name="Type") +
+      labs(title = paste(input$variable1, "vs", input$variable2)) +
+      theme_minimal() + 
+      theme(legend.position="bottom") +
+      facet_wrap(~ code_departement_ban)
+    
+    if (input$show_regression == "Afficher" && nrow(data_plot_clean) > 1) {
+      p <- p + geom_smooth(method = "lm", se = FALSE, color = "#555555", formula = y ~ x)
+    }
+    
+    ggplotly(p) %>% layout(legend = list(orientation = "h", x = 0.1, y = -0.2))
+  })
+  
+  output$carte <- renderLeaflet({
+    data_map <- filtered_data_tab3()
+    req(data_map, nrow(data_map) > 0)
+    
+    pal <- colorFactor(palette = c("#008000", "#50A000", "#A0D000", "#FFFF00", 
+                                   "#FFC000", "#FF8000", "#FF0000"), 
+                       domain = etiquette_choices, ordered = TRUE)
+    
+    center_lat <- mean(data_map$latitude, na.rm = TRUE)
+    center_lon <- mean(data_map$longitude, na.rm = TRUE)
+    
+    leaflet(data_map) %>% 
+      addProviderTiles(providers$CartoDB.Positron) %>% 
+      setView(lng = center_lon, lat = center_lat, zoom = 8) %>%
+      addCircleMarkers(
+        lng = ~longitude, lat = ~latitude, radius = 4,
+        color = ~pal(etiquette_dpe), stroke = FALSE, fillOpacity = 0.7,
+        popup = ~paste("<b>Commune:</b>", nom_commune_ban, 
+                       "<br><b>Étiquette:</b>", etiquette_dpe),
+        clusterOptions = markerClusterOptions(maxClusterRadius = 40)
+      ) %>%
+      addLegend(position = "bottomright", pal = pal, values = etiquette_choices, 
+                title = "Étiquette", opacity = 1)
+  })
+  
+  output$tableau <- renderDT({
+    data_table <- filtered_data_tab4()
+    req(data_table, nrow(data_table) > 0)
+    
+    cols_to_select <- c("type_source", "nom_commune_ban", "code_departement_ban", "etiquette_dpe", 
+                        "conso_5_usages_par_m2_ep", "surface_habitable_logement")
+    cols_exist <- intersect(cols_to_select, names(data_table))
+    
+    data_table <- data_table %>% 
+      select(all_of(cols_exist), everything(), 
+             -any_of(c("latitude", "longitude", "coordonnee_cartographique_x_ban", 
+                       "coordonnee_cartographique_y_ban")))
+    
+    datatable(data_table, options = list(scrollX = TRUE, pageLength = 10), 
+              rownames = FALSE, filter = 'top')
+  })
+  
+  output$download_data <- downloadHandler(
+    filename = function() paste("dpe_filtre_", Sys.Date(), ".csv", sep = ""),
+    content = function(file) write.csv(filtered_data_tab4(), file, row.names = FALSE)
+  )
+  
+  observeEvent(input$refresh_data_api, {
+    showModal(modalDialog("Rafraîchissement en cours...", title = "API ADEME", footer = NULL))
+    Sys.sleep(2) 
+    removeModal()
+    showNotification("Données mises à jour", type = "message", duration = 5)
+  })
+}
+
+if (!show_load_error) {
+  shinyApp(ui = ui, server = server)
+} else {
+  error_display <- if(error_message != "") error_message else "Impossible de charger les données"
+  shinyApp(
+    ui = fluidPage(h3(paste("Erreur:", error_display), 
+                      style="color:red; text-align:center; padding-top: 50px;")),
+    server = function(input, output, session){}
+  )
+}
