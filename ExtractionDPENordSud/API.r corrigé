@@ -1,0 +1,134 @@
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(readr)
+
+# Répertoire de travail
+setwd("C:/Users/alshawwa/Desktop/Projet R shiny/ExtractionDPENordSud")
+
+# Codes postaux cibles
+codes_nord <- c(59000, 59800, 59100, 59200, 59140)
+codes_sud <- c(66000, 66100, 66140, 66240, 66700)
+Code_postal <- c(codes_nord, codes_sud)
+
+new_df <- data.frame()
+base_api_url <- "https://data.ademe.fr/data-fair/api/v1/datasets/"
+dataset_ids <- c("dpe03existant", "dpe02neuf")
+
+# Colonnes communes (20)
+select_fields_communs <- paste(
+  "code_postal_ban", "nom_commune_ban", "code_departement_ban",
+  "etiquette_dpe", "etiquette_ges",
+  "conso_5_usages_par_m2_ep", "emission_ges_5_usages_par_m2",
+  "conso_chauffage_ep", "conso_ecs_ep",
+  "besoin_chauffage",
+  "type_batiment", "surface_habitable_logement", "zone_climatique",
+  "type_energie_principale_chauffage", "type_energie_principale_ecs",
+  "qualite_isolation_murs", "qualite_isolation_menuiseries",
+  "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban",
+  "date_reception_dpe",
+  sep=","
+)
+
+select_fields_existant <- paste(select_fields_communs, "annee_construction", sep=",")
+select_fields_neuf <- select_fields_communs
+
+for (cp in Code_postal){
+  
+  for (dataset_id in dataset_ids) {
+    
+    current_url <- paste0(base_api_url, dataset_id, "/lines")
+    source_label <- ifelse(dataset_id == "dpe03existant", "Existant (dpe03)", "Neuf (dpe02)")
+    
+    current_select_fields <- ifelse(dataset_id == "dpe03existant", 
+                                    select_fields_existant, 
+                                    select_fields_neuf)
+    
+    params <- list(
+      select = current_select_fields, 
+      size = 10000, 
+      q = cp,
+      q_fields = "code_postal_ban"
+    )
+    
+    url_encoded <- modify_url(current_url, query = params)
+    response <- GET(url_encoded)
+    
+    if (status_code(response) != 200) {
+      next 
+    }
+    
+    content <- tryCatch({
+      fromJSON(rawToChar(response$content), flatten = TRUE) 
+    }, error = function(e) {
+      return(NULL) 
+    })
+    
+    if (is.null(content)) { next }
+    
+    if(!is.null(content$results) && (is.data.frame(content$results) || length(content$results) > 0)) {
+      
+      results_df <- content$results
+      if(!is.data.frame(results_df) && length(results_df) > 0) {
+        results_df <- tryCatch(bind_rows(results_df), error = function(e) { NULL })
+      } else if (length(results_df) == 0 && !is.data.frame(results_df)) {
+        results_df <- data.frame() 
+      }
+      
+      if (!is.null(results_df) && nrow(results_df) > 0) {
+        results_df$type_source <- source_label
+        
+        if (dataset_id == "dpe02neuf") {
+          results_df$annee_construction <- NA_integer_ 
+        }
+        
+        tryCatch({
+          new_df <- bind_rows(new_df, results_df) 
+        }, error = function(e_bind) {
+          # Erreur silencieuse
+        })
+      }
+    }
+    
+    Sys.sleep(0.5) 
+    
+  }
+  
+  Sys.sleep(1.0) 
+  
+}
+
+# Nettoyage
+if (!is.null(new_df) && nrow(new_df) > 0) { 
+  list_cols <- sapply(new_df, is.list)
+  if(any(list_cols)) {
+    list_col_names <- names(new_df)[list_cols]
+    for(col_name in list_col_names) {
+      new_df[[col_name]] <- sapply(new_df[[col_name]], function(x) {
+        if (is.null(x) || length(x) == 0) return(NA_character_)
+        if (is.list(x) || length(x) > 1) return(paste(unlist(x), collapse = "; ")) 
+        return(as.character(x))
+      })
+    }
+  }
+}
+
+# Déduplication et sauvegarde
+if (!is.null(new_df) && nrow(new_df) > 0) {
+  
+  new_df$typologie_logement <- ifelse(
+    new_df$type_source == "Neuf (dpe02)", 
+    "neuf", 
+    "existant"
+  )
+  
+  tryCatch({ 
+    new_df <- distinct(new_df) 
+  }, error = function(e){})
+  
+  file_name_csv <- "df_nord_sud_COMBINE_COMPLET.csv"
+  
+  tryCatch({
+    readr::write_csv(new_df, file = file_name_csv, na = "") 
+  }, error = function(e_write) {})
+}
