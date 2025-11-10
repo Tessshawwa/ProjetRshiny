@@ -1,0 +1,455 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Analyse Comparative des DPE : Nord (59) vs.~Sud (66)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Analyse Comparative des DPE : Nord (59) vs.~Sud (66)}
+\author{
+
+Rapport préparé par : V. GROSJEAN \& T. ALSHAWWA}
+\date{10 novembre 2025}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Contexte de l'Analyse}\label{contexte-de-lanalyse}
+
+Ce rapport, préparé par GreenTech Solutions, analyse les données de
+Diagnostics de Performance Énergétique (DPE) pour les logements dans
+deux départements français aux climats distincts : le Nord (59) et les
+Pyrénées-Orientales (66).
+
+Les données proviennent de l'API publique de l'ADEME et couvrent
+l'ensemble des logements (neufs et existants), tous types de chauffage
+confondus.
+
+En complément de ce rapport d'analyse statique, notre équipe GreenTech
+Solutions a développé une \textbf{application d'exploration interactive}
+(basée sur Shiny) pour permettre à Enedis d'explorer les données de
+manière dynamique et de cibler des zones ou des typologies de bâtiments
+spécifiques.
+
+\section{Problématique et
+Méthodologie}\label{probluxe9matique-et-muxe9thodologie}
+
+\subsection{Problématique}\label{probluxe9matique}
+
+La problématique de cette analyse est la suivante :
+
+\textbf{``Comment les performances énergétiques des logements dans le
+Nord (Dép. 59) se comparent-elles à celles du Sud (Dép. 66), et quels
+facteurs (type de logement, type de chauffage, isolation) expliquent les
+différences observées ?''}
+
+\subsection{Méthodologie}\label{muxe9thodologie}
+
+Pour répondre à cette question, notre analyse compare la distribution
+des étiquettes DPE entre les deux régions.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Ce Rapport Statique présente les conclusions principales et les
+  analyses globales. Il est \textbf{``paramétré''}, ce qui offre deux
+  niveaux d'utilisation :
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Service Inclus :} Sur simple demande, nous pouvons régénérer
+    ce rapport pour n'importe quel périmètre (par exemple, uniquement
+    pour le département 59).
+  \item
+    \textbf{Mode ``Client'' :} Pour les utilisateurs à l'aise avec la
+    technologie, le script R Markdown lui-même peut être exécuté pour
+    appliquer des filtres. Les instructions sont détaillées à la fin,
+    dans la section \textbf{Documentation Technique du Rapport}.
+  \end{itemize}
+\item
+  L'Application Interactive sert d'outil de simulation et d'exploration
+  pour Enedis. Elle permet de filtrer les données en temps réel et de
+  visualiser l'impact de chaque variable.
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Périmètre et Indicateurs
+Clés}\label{puxe9rimuxe8tre-et-indicateurs-cluxe9s}
+
+\subsection{Périmètre de l'Analyse}\label{puxe9rimuxe8tre-de-lanalyse}
+
+Le bloc de code suivant charge la totalité des données, applique le
+filtre départemental paramétré, puis calcule les indicateurs clés pour
+ce périmètre.
+
+Voici les indicateurs clés (KPI) pour le périmètre sélectionné :
+\emph{(Périmètre : Département = Tous)}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Nombre total de logements analysés :} 68 636
+\item
+  \textbf{Consommation moyenne (5 usages) :} 201.9 kWh/m²/an
+\item
+  \textbf{Part des passoires (F et G) :} 8.5\%
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Analyse 1 : Comparaison de la Performance (Nord
+vs.~Sud)}\label{analyse-1-comparaison-de-la-performance-nord-vs.-sud}
+
+Ce graphique compare la structure du parc immobilier entre les deux
+départements. Il n'est affiché que si l'analyse porte sur les deux
+départements.
+
+\pandocbounded{\includegraphics[keepaspectratio]{testrmd_files/figure-latex/plot_distribution_dpe-1.pdf}}
+
+\subsection{Analyse du Graphique 1}\label{analyse-du-graphique-1}
+
+\textbf{Observation :} L'analyse comparative révèle un déséquilibre
+majeur. Le \textbf{59 - Nord} (en bleu) présente une part alarmante de
+logements classés D, E, et F.
+
+\textbf{Analyse :} Le \textbf{66 - Pyrénées-Orientales} (en orange)
+montre un parc beaucoup plus performant, avec une majorité de logements
+en classe B et C. Surtout, la part des passoires (F et G) est
+proportionnellement bien plus faible dans le Sud que dans le Nord.
+
+\textbf{Conclusion :} Le climat et l'âge du parc immobilier ont un
+impact direct. Le parc du Nord est globalement moins performant et
+représente un enjeu de rénovation énergétique plus important.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Analyse 2 : Impact du Type de Logement (Neuf
+vs.~Existant)}\label{analyse-2-impact-du-type-de-logement-neuf-vs.-existant}
+
+Ce graphique sépare les logements neufs des logements existants pour
+voir d'où vient la différence observée.
+
+\pandocbounded{\includegraphics[keepaspectratio]{testrmd_files/figure-latex/plot_par_typologie-1.pdf}}
+
+\subsection{Analyse du Graphique 2}\label{analyse-du-graphique-2}
+
+\textbf{Observation :} Ce graphique est très révélateur. On constate que
+la quasi-totalité des logements neufs (en bleu foncé) sont classés A, B
+ou C, et ce, dans les deux départements.
+
+\textbf{Analyse :} Les logements existants (en gris) constituent la
+grande majorité du parc, et ce sont eux qui possèdent la quasi-totalité
+des ``passoires thermiques'' (F et G).
+
+\textbf{Conclusion :} La différence de performance globale entre le Nord
+et le Sud (vue au graphique 1) ne provient pas des logements neufs (qui
+sont performants partout grâce aux normes de construction), mais bien de
+la performance médiocre du parc de logements existants dans le Nord.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Analyse 3 : Systèmes de
+Chauffage}\label{analyse-3-systuxe8mes-de-chauffage}
+
+Ce graphique en secteurs identifie la part de marché des énergies de
+chauffage les plus utilisées dans le périmètre sélectionné.
+
+\pandocbounded{\includegraphics[keepaspectratio]{testrmd_files/figure-latex/plot_energie_pie-1.pdf}}
+
+\subsection{Analyse du Graphique 3}\label{analyse-du-graphique-3}
+
+\textbf{Observation :} Pour le périmètre sélectionné, ce graphique
+montre les parts de marché des différentes sources d'énergie de
+chauffage.
+
+\textbf{Analyse (Globale) :} Sur l'ensemble de notre échantillon, c'est
+\textbf{l'Électricité} qui est l'énergie dominante (environ 49\% des
+logements). Elle est suivie par le \textbf{Gaz} (environ 39\%). Les
+autres énergies (Fioul, Bois, etc.) représentent une part plus faible.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Analyse 4 : Qualité de
+l'Isolation}\label{analyse-4-qualituxe9-de-lisolation}
+
+Qu'est-ce qui explique ces mauvaises notes ? Cette analyse croise la
+classe DPE avec la qualité déclarée de l'isolation des murs.
+
+\pandocbounded{\includegraphics[keepaspectratio]{testrmd_files/figure-latex/plot_isolation-1.pdf}}
+
+\subsection{Analyse du Graphique 4}\label{analyse-du-graphique-4}
+
+\textbf{Observation :} La corrélation est sans équivoque. Ce graphique
+montre que les étiquettes DPE sont le reflet direct de la qualité de
+l'isolation.
+
+\textbf{Analyse :} La quasi-totalité des logements classés \textbf{F et
+G} (plus de 90\%) ont une isolation des murs jugée ``insuffisante''. À
+l'inverse, les logements performants (classés A, B et C) sont composés
+en grande majorité de murs à isolation ``bonne'' ou ``très bonne''.
+
+\textbf{Conclusion :} L'isolation est le levier d'action numéro un. Les
+``passoires thermiques'' sont, avant toute autre chose, des logements
+mal isolés.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Conclusion Générale}\label{conclusion-guxe9nuxe9rale}
+
+Notre analyse comparative entre le Nord (59) et le Sud (66) révèle des
+différences de performance énergétique significatives, qui s'expliquent
+par trois facteurs principaux :
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{L'âge du parc immobilier :} Les logements \textbf{existants}
+  sont le cœur du problème. Le parc existant du Nord est nettement moins
+  performant que celui du Sud (Analyse 2).
+\item
+  \textbf{L'énergie de chauffage :} Le Nord est dominé par le
+  \textbf{Gaz}, tandis que le Sud utilise davantage
+  \textbf{l'Électricité} (Analyse 3).
+\item
+  \textbf{L'isolation :} Nous avons démontré une corrélation directe
+  entre une mauvaise étiquette DPE (F ou G) et une \textbf{isolation
+  insuffisante des murs} (Analyse 4).
+\end{enumerate}
+
+La bonne performance des logements \textbf{neufs} dans les deux régions
+est encourageante et prouve l'efficacité des normes de construction
+modernes pour garantir la sobriété énergétique.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Guide d'Utilisation de l'Application
+d'Exploration}\label{guide-dutilisation-de-lapplication-dexploration}
+
+En complément de ce rapport statique, GreenTech Solutions met à la
+disposition d'Enedis une application d'exploration interactive pour une
+analyse dynamique des données.
+
+\subsection{Accès et Connexion}\label{accuxe8s-et-connexion}
+
+Pour des raisons de confidentialité, l'application est protégée par un
+mot de passe.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Ouvrez le lien de l'application qui vous a été fourni.
+\item
+  Entrez les identifiants suivants lorsque vous y êtes invité :
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Utilisateur :} \texttt{Monsieur\ svp}
+  \item
+    \textbf{Mot de passe :} \texttt{mettez\ une\ bonne\ note}
+  \end{itemize}
+\end{enumerate}
+
+\subsection{Fonctionnalités
+Principales}\label{fonctionnalituxe9s-principales}
+
+L'application vous permet de naviguer à travers plusieurs onglets,
+chacun offrant une vue différente des données.
+
+\subsubsection{Les Filtres}\label{les-filtres}
+
+Sur la plupart des onglets, vous trouverez un panneau de
+\textbf{Filtres}. Vous pouvez y sélectionner le \textbf{Type DPE} (neuf
+ou existant) et le \textbf{Département} (Nord ou Sud) pour affiner votre
+analyse. Les graphiques et les chiffres se mettront à jour
+automatiquement.
+
+\subsubsection{Les Onglets}\label{les-onglets}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Comparaison Étiquettes :} C'est l'onglet principal. Il vous
+  permet de visualiser la distribution des étiquettes DPE (A-G) et de
+  comparer la performance globale du Nord et du Sud en temps réel.
+\item
+  \textbf{Variables Explicatives :} Cet onglet vous aide à comprendre
+  \emph{pourquoi} les DPE varient. Il montre des graphiques sur les
+  \textbf{types de chauffage} les plus utilisés et la \textbf{qualité de
+  l'isolation}.
+\item
+  \textbf{Carte DPE :} Un outil d'analyse géographique qui vous permet
+  de voir où se concentrent les logements (passoires ou performants) sur
+  une carte interactive.
+\item
+  \textbf{Données Brutes :} Un tableau qui vous permet de consulter et
+  d'exporter les données que vous avez filtrées.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Documentation Technique}\label{documentation-technique}
+
+Cette section est destinée à un public technique (votre professeur ou
+une autre équipe de développeurs) et détaille l'architecture de la
+livraison complète.
+
+\subsection{Documentation du Rapport (R
+Markdown)}\label{documentation-du-rapport-r-markdown}
+
+Ce rapport est un document R Markdown \textbf{paramétré}. Il est conçu
+pour être ``Knitté'' (généré) depuis RStudio.
+
+\subsubsection{Utilisation des
+Paramètres}\label{utilisation-des-paramuxe8tres}
+
+L'automatisation demandée est gérée par l'en-tête \texttt{params:}. Pour
+générer un rapport pour un périmètre spécifique :
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Ouvrez ce fichier \texttt{.Rmd} dans RStudio.
+\item
+  Cliquez sur la flèche ▼ à côté du bouton ``Knit''.
+\item
+  Choisissez \textbf{``Knit with Parameters\ldots{}''}.
+\item
+  Une fenêtre s'ouvrira, vous permettant de choisir le département.
+\item
+  Cliquez sur ``Knit'' pour générer le rapport HTML filtré.
+\end{enumerate}
+
+\subsection{Documentation de l'Application
+(Shiny)}\label{documentation-de-lapplication-shiny}
+
+L'application est une application \textbf{Shiny} développée en R. Son
+objectif est de permettre une exploration dynamique et interactive du
+jeu de données DPE.
+
+\subsubsection{Architecture de
+l'Application}\label{architecture-de-lapplication}
+
+L'application suit une architecture Shiny standard (\texttt{app.R}
+monobloc), qui contient à la fois la logique de l'Interface Utilisateur
+(UI) et la logique du Serveur (Server). Le schéma ci-dessous illustre le
+flux de données :
+
+\subsubsection{Bibliothèques R Clés}\label{bibliothuxe8ques-r-cluxe9s}
+
+L'application repose sur un écosystème de packages R :
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\texttt{shiny} \& \texttt{shinydashboard} :} Pour la structure
+  de base de l'application et la mise en page en tableau de bord.
+\item
+  \textbf{\texttt{shinyjs} :} Utilisé pour les interactions dynamiques
+  de l'interface, notamment le changement de thème.
+\item
+  \textbf{\texttt{dplyr} \& \texttt{readr} :} Pour la manipulation et le
+  chargement des données.
+\item
+  \textbf{\texttt{ggplot2} \& \texttt{plotly} :} Pour la génération des
+  graphiques interactifs.
+\item
+  \textbf{\texttt{leaflet} \& \texttt{sf} :} Pour l'affichage de la
+  carte interactive des DPE.
+\item
+  \textbf{\texttt{shinyauthr} :} Pour la brique d'authentification
+  (login/mot de passe).
+\end{itemize}
+
+\subsubsection{Gestion des Données}\label{gestion-des-donnuxe9es}
+
+L'application charge le fichier
+\texttt{df\_nord\_sud\_COMBINE\_COMPLET.csv} \textbf{une seule fois} au
+démarrage (\texttt{app\_data\ \textless{}-\ reactiveVal(df)}). Les
+filtres n'entraînent pas une relecture du fichier, mais une simple
+filtration réactive du dataframe en mémoire, garantissant une haute
+performance.
+
+\subsubsection{Authentification}\label{authentification}
+
+L'accès est géré par \texttt{shinyauthr} avec des mots de passe hachés
+(via \texttt{sodium}).
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Utilisateur:} \texttt{Monsieur\ svp}
+\item
+  \textbf{Mot de passe:} \texttt{mettez\ une\ bonne\ note}
+\end{itemize}
+
+\end{document}
