@@ -1,0 +1,329 @@
+---
+title: "Analyse Comparative des DPE : Nord (59) vs. Sud (66)"
+author: |
+  <div class="logo-container">
+    <img src="greentech_logo.png" alt="GreenTech Logo" class="logo">
+    <img src="Logo_enedis.png" alt="Enedis Logo" class="logo">
+  </div>
+  <br>
+  **Rapport préparé par : GreenTech Solutions**
+  <br>
+  (V. GROSJEAN, T. ALSHAWWA)
+date: "`r format(Sys.Date(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: cerulean
+    code_folding: hide
+    number_sections: false
+---
+
+<style type="text/css">
+/* --- 1. Police principale --- */
+body {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.3em; /* Police du corps de texte (plus grande) */
+}
+
+/* --- 2. Centrer le bloc de titre --- */
+#header {
+  text-align: center;
+}
+
+/* --- 3. Style du Titre Principal (Rouge, Gras, Belle Police) --- */
+#header h1 {
+  font-family: "Times New Roman", Times, serif; /* Police Times pour tout */
+  font-weight: bold;           /* En gras */
+  color: #c00000;             /* Rouge foncé */
+  font-size: 2.5em;            /* Plus grand */
+}
+
+/* --- 4. S'assurer que les titres de section sont en gras --- */
+h1, h2 {
+  font-weight: bold;
+}
+
+/* --- 5. Titre du Sommaire --- */
+#TOC::before {
+  content: "Sommaire";
+  font-size: 1.5em;
+  font-weight: bold;
+  font-family: "Times New Roman", Times, serif; /* Police Times pour tout */
+  color: black;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* --- 6. Titres 2 en Noir --- */
+h2 {
+  color: black !important; /* Forcer le H2 (ex: "Problématique") en noir */
+}
+
+/* --- 7. Logos --- */
+.logo-container {
+  display: flex;
+  justify-content: center; /* Centre les logos */
+  align-items: center;
+  gap: 50px; /* Espace entre les logos */
+}
+.logo {
+  max-height: 80px; /* Taille max des logos */
+  width: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+# Configuration globale du document
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(lubridate)
+library(scales)
+library(knitr)     # Pour kable
+library(forcats)   # Pour le pie chart
+library(ggrepel)   # <-- AJOUTÉ POUR FIXER LES ÉTIQUETTES
+```
+
+
+# Introduction
+Avec l'accélération du changement climatique et la hausse des prix de l'énergie, la sobriété énergétique est devenue une préoccupation nationale centrale. Notre client, **Enedis**, en tant que gestionnaire principal du réseau de distribution d'électricité, est en première ligne pour anticiper les futures demandes et tensions sur le réseau.
+
+C'est dans ce contexte qu'Enedis a mandaté notre société de conseil, **GreenTech Solutions**, pour analyser l'important gisement de données public des Diagnostics de Performance Énergétique (DPE), afin d'évaluer l'impact réel de la performance thermique des bâtiments sur la consommation d'énergie.
+
+## Objectifs
+L'objectif de ce projet est double :
+
+1.  **Analyser** les données DPE pour identifier les tendances clés et les facteurs explicatifs de la performance énergétique, en se concentrant sur une comparaison entre un climat continental (Nord - Dép. 59) et un climat méditerranéen (Sud - Dép. 66).
+2.  **Livrer** deux outils complémentaires à Enedis :
+    * **Un rapport d'analyse statique**, présentant nos conclusions et recommandations clés de manière formelle.
+    * **Une application d'exploration interactive**, permettant aux équipes d'Enedis de filtrer les données en temps réel et de mener leurs propres analyses exploratoires.
+
+## Problématique
+La problématique centrale de notre étude est la suivante :
+
+**"Comment les performances énergétiques des logements dans le Nord (Dép. 59) se comparent-elles à celles du Sud (Dép. 66), et quels facteurs (type de logement, type de chauffage, isolation) expliquent les différences observées ?"**
+
+## Méthodologie et Outils
+
+### Méthodologie
+Notre approche s'est déroulée en quatre phases :
+
+1.  **Extraction des données :** Collecte des données depuis l'API publique de l'ADEME pour les départements 59 et 66, couvrant les logements neufs et existants.
+2.  **Nettoyage et Préparation :** Consolidation des jeux de données, filtrage des valeurs `NA` non pertinentes, et standardisation des catégories (par ex. `59` -> `59 - Nord`).
+3.  **Analyse et Visualisation :** Création de visualisations (barres, camemberts, cartes) pour comparer les deux départements et identifier les corrélations (ex: DPE vs. Isolation).
+4.  **Synthèse :** Production de ce rapport statique (via R Markdown) et développement de l'application Shiny pour le client.
+
+### Outils
+Ce projet a été entièrement réalisé avec le langage de programmation **R** et l'environnement **RStudio**. Les principaux packages utilisés sont :
+
+* **Manipulation de données :** `dplyr` (pour le filtrage) et `readr` (pour la lecture du CSV).
+* **Visualisation :** `ggplot2` (pour les graphiques statiques) et `plotly` (pour les graphiques interactifs).
+* **Rapport :** `rmarkdown` (pour ce rapport) et `knitr`.
+* **Application Interactive :** `shiny` et `shinydashboard` (pour la structure de l'application).
+
+---
+
+# Source, Périmètre et Indicateurs Clés
+
+## Source des Données
+Les données brutes de cette analyse ont été collectées via l'**API publique de l'ADEME** (Agence de la transition écologique). Cette source garantit l'accès aux Diagnostics de Performance Énergétique (DPE) les plus récents pour les logements neufs et existants.
+
+## Périmètre et Indicateurs Clés (KPI)
+
+Le bloc de code suivant charge la totalité des données et calcule les indicateurs clés pour ce périmètre.
+
+```{r calcul_et_kpi, echo=FALSE}
+# 'echo = FALSE' : On cache ce bloc technique dans le rapport final.
+# On dit à R de chercher le CSV "un niveau au-dessus" (dans le dossier parent)
+fichier_data <- "C:/Users/alshawwa/Documents/ProjetRshiny/ExtractionDPENordSud/df_nord_sud_COMBINE_COMPLET.csv"
+df_brut <- read_csv(fichier_data)
+
+# 1. On analyse TOUTES les données (plus de filtre params)
+df_filtre <- df_brut 
+
+# 2. Préparation finale pour l'analyse
+dpe_levels <- c("A", "B", "C", "D", "E", "F", "G") # Ordre correct
+
+df_prepare <- df_filtre %>%
+  mutate(etiquette_dpe = factor(etiquette_dpe, levels = dpe_levels, ordered = TRUE)) %>%
+  mutate(departement = case_when(
+    code_departement_ban == 59 ~ "59 - Nord",
+    code_departement_ban == 66 ~ "66 - Pyrénées-Orientales",
+    TRUE ~ as.character(code_departement_ban)
+  )) %>%
+  filter(!is.na(etiquette_dpe), !is.na(departement), !is.na(typologie_logement))
+  
+# 3. Calcul des KPI pour affichage
+kpi_total <- format(nrow(df_prepare), big.mark = " ")
+kpi_conso <- round(mean(df_prepare$conso_5_usages_par_m2_ep, na.rm = TRUE), 1)
+kpi_passoires <- scales::percent(sum(df_prepare$etiquette_dpe %in% c("F", "G")) / nrow(df_prepare), accuracy = 0.1)
+```
+
+Voici les indicateurs clés (KPI) pour le périmètre global (Départements 59 et 66) :
+
+* **Nombre total de logements analysés :** `r kpi_total`
+* **Consommation moyenne (5 usages) :** `r kpi_conso` kWh/m²/an
+* **Part des passoires (F et G) :** `r kpi_passoires`
+
+---
+
+# Comparaison de la Performance (Nord vs. Sud)
+
+Ce graphique compare la structure du parc immobilier entre les deux départements.
+
+```{r plot_distribution_dpe}
+ggplot(df_prepare, aes(x = etiquette_dpe, fill = departement)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("59 - Nord" = "#329EC1", "66 - Pyrénées-Orientales" = "#f28e2c")) +
+  labs(
+    title = "Distribution des Étiquettes DPE (Nord vs. Sud)",
+    subtitle = "Comparaison en pourcentage de chaque parc immobilier",
+    x = "Étiquette DPE",
+    y = "Proportion",
+    fill = "Département"
+  ) +
+  theme_minimal()
+```
+
+## Analyse 
+On constate que ce graphique révèle une polarisation géographique très marquée de la performance énergétique. Le département des Pyrénées-Orientales (66) domine largement les logements performants (étiquettes A et B), tandis que le département du Nord (59) concentre massivement la part des "passoires thermiques" (étiquettes F et G).
+
+Cette disparité structurelle implique un risque élevé de pics de consommation hivernaux dans le Nord, liés à une forte demande de chauffage, faisant de la rénovation une priorité stratégique sur ce territoire. Inversement, le parc performant du Sud (66), dans un climat chaud, soulève une vigilance nouvelle sur les pics de demande estivaux potentiellement générés par la climatisation, indiquant un fort potentiel pour les solutions de pilotage intelligent du réseau.
+
+---
+
+# Impact du Type de Logement (Neuf vs. Existant)
+
+Ce graphique sépare les logements neufs des logements existants pour voir d'où vient la différence observée.
+
+```{r plot_par_typologie}
+ggplot(df_prepare, aes(x = etiquette_dpe, fill = typologie_logement)) +
+  geom_bar() +
+  facet_wrap(~ departement, scales = "free_y") + # Un graphique pour chaque département
+  scale_fill_manual(values = c("existant" = "#B0B0B0", "neuf" = "#1F78B4")) +
+  labs(
+    title = "Distribution DPE par Type de Logement (Neuf vs. Existant)",
+    subtitle = "Répartition par département (nombre de logements)",
+    x = "Étiquette DPE",
+    y = "Nombre de Logements",
+    fill = "Typologie"
+  ) +
+  theme_minimal()
+```
+
+## Analyse
+
+Cette analyse nous fournit une explication directe à la divergence Nord/Sud observée dans le premier graphique. Le facteur déterminant n'est pas le parc neuf, qui est logiquement performant dans les deux départements (majoritairement B/C dans le Nord, A/B dans le Sud) du fait des normes de construction récentes.
+
+La différence fondamentale provient du parc existant, qui constitue la masse écrasante des logements. Dans le Nord (59), ce parc existant est non seulement volumineux mais aussi structurellement peu performant, avec ses volumes les plus importants concentrés sur les étiquettes C et D. C'est ce stock ancien et énergivore qui explique la faible performance globale du département vue précédemment. Bien que le parc existant du Sud (66) soit également majoritaire, son profil est comparativement meilleur, avec un pic principal à l'étiquette C.
+
+---
+
+# Systèmes de Chauffage (Top 3)
+
+Ce graphique identifie les énergies de chauffage les plus utilisées, sous forme de parts de marché.
+
+```{r plot_energie_pie, warning=FALSE}
+# Préparation des données pour le bar chart horizontal
+df_plot_pie <- df_prepare %>%
+  filter(!is.na(type_energie_principale_chauffage) & type_energie_principale_chauffage != "") %>%
+  count(type_energie_principale_chauffage, name = "count") %>%
+  mutate(
+    proportion = count / sum(count),
+    energie_simple = fct_lump_n(type_energie_principale_chauffage, n = 3, w = count, other_level = "Autres")
+  ) %>%
+  group_by(energie_simple) %>%
+  summarise(
+    n = sum(count),
+    proportion = sum(proportion)
+  ) %>%
+  arrange(proportion) %>%  # Tri croissant pour l'affichage horizontal
+  mutate(
+    label_text = scales::percent(proportion, accuracy = 1)
+  )
+
+# Création du bar chart horizontal
+ggplot(df_plot_pie, aes(x = proportion, y = reorder(energie_simple, proportion))) +
+  geom_col(aes(fill = energie_simple), show.legend = FALSE) +
+  geom_text(aes(label = label_text), hjust = -0.2, size = 4, color = "black") +
+  scale_x_continuous(
+    labels = scales::percent_format(),
+    limits = c(0, max(df_plot_pie$proportion) * 1.15),
+    expand = c(0, 0)
+  ) +
+  labs(
+    title = "Parts de Marché des Énergies de Chauffage Principales",
+    subtitle = "Périmètre : Départements 59 et 66",
+    x = "Part de marché",
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.text = element_text(size = 11),
+    axis.text.y = element_text(size = 12),
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5)
+  )
+```
+
+## Analyse
+
+Ici on observe la part de marché globale des énergies de chauffage sur le périmètre combiné des deux départements. l'électricité (49%) et le gaz naturel (43%). Ces deux vecteurs représentent à eux seuls 92% du mix énergétique pour le chauffage sur l'ensemble du parc étudié, reléguant les autres sources, comme le chauffage urbain (5%), à un rôle marginal.
+
+Donc çela confirme que l'électricité est le principal vecteur de chauffage, mais qu'elle est en concurrence quasi directe avec le gaz naturel.
+
+---
+
+# Qualité de l'Isolation
+
+Qu'est-ce qui explique ces mauvaises notes ? Cette analyse croise la classe DPE avec la qualité déclarée de l'isolation des murs, comme le montre l'application Shiny.
+
+```{r plot_isolation}
+# Nous filtrons les DPE "blancs" ou inconnus pour l'isolation
+df_plot_iso <- df_prepare %>%
+  filter(qualite_isolation_murs %in% c("bonne", "moyenne", "insuffisante", "très bonne")) %>%
+  # Ordonner les niveaux pour la légende
+  mutate(qualite_isolation_murs = factor(qualite_isolation_murs, 
+                                         levels = c("très bonne", "bonne", "moyenne", "insuffisante"))) %>%
+  count(etiquette_dpe, qualite_isolation_murs) %>%
+  group_by(etiquette_dpe) %>%
+  mutate(proportion = n / sum(n)) %>%
+  ungroup()
+
+ggplot(df_plot_iso, aes(x = etiquette_dpe, y = proportion, fill = qualite_isolation_murs)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(
+    values = c("très bonne" = "#006837", "bonne" = "#4E9D52", "moyenne" = "#E7B800", "insuffisante" = "#DB4444"),
+    name = "Isolation Murs"
+  ) +
+  labs(
+    title = "Relation entre Classe DPE et Isolation des Murs",
+    x = "Étiquette DPE",
+    y = "Proportion"
+  ) +
+  theme_minimal()
+```
+
+## Analyse
+
+Ce graphique établit un lien de causalité direct et indéniable entre la performance énergétique d'un logement et la qualité de l'isolation de ses murs. La corrélation observée est extrêmement forte : les logements les plus performants (étiquettes A et B) sont exclusivement dotés d'une isolation jugée "bonne" ou "très bonne".
+
+À l'inverse, la contre-performance des logements (étiquettes E, F et G) s'explique de manière écrasante par une isolation "insuffisante". Cette catégorie représente presque la totalité des bâtiments classés F et G. Le point de bascule se situe à l'étiquette D, où l'isolation "insuffisante" devient brutalement majoritaire, remplaçant la dominance de la "bonne" isolation vue en classe C
+
+---
+
+# Conclusion
+
+In fine, notre analyse confirme une fracture nette de la performance énergétique : le Nord (59) concentre les "passoires thermiques" (F, G) tandis que le Sud (66) domine les classes performantes (A, B).
+
+Ce déséquilibre s'explique principalement par le parc existant du Nord, dont la performance est directement dégradée par une isolation "insuffisante", facteur technique que nous avons identifié comme déterminant.
+
+Pour Enedis, les implications stratégiques sont claires. Le Nord (59) représente un risque structurel de pics de consommation hivernaux (chauffage), faisant de la rénovation la priorité absolue pour le réseau. Inversement, le parc performant du Sud (66) reporte l'enjeu sur les pics estivaux (climatisation), appelant au déploiement de solutions de pilotage intelligent de la demande.
+
+---
