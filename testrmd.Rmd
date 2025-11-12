@@ -1,27 +1,30 @@
 ---
-title: "Analyse Comparative des DPE : Nord (59) vs. Sud (66)"
+title: 'Analyse Comparative des DPE : Nord (59) vs. Sud (66)'
 author: |
   <div>
-    <img src="greentech_logo.png" alt="GreenTech Logo" style="height: 50px; vertical-align: middle; margin: 10px;">
-    <img src="Logo_enedis.png" alt="Logo enedis" style="height: 50px; vertical-align: middle; margin: 10px;">
-  </div>
+    <img src="greentech_logo.png" alt="GreenTech Logo" style="height:50px; vertical-align: middle; margin: 10px;">
+    <img src="Logo_enedis.png" alt="Logo Enedis" style="height:50px; vertical-align: middle; margin: 10px;">
   <div style="margin-top: 20px;">
-    Rapport préparé par : V. GROJEAN & T. ALSHAWWA
-  </div>
+    Rapport préparé par : V. GROSJEAN & T. ALSHAWWA
 date: "`r format(Sys.Date(), '%d %B %Y')`"
 output:
+  pdf_document:
+    toc: true
   html_document:
     toc: true
     toc_float: true
-    number_sections: false  
+    number_sections: false
     theme: cerulean
     code_folding: hide
 params:
   code_postal:
-    label: "Choisir le Département :"
-    value: "Tous"
+    label: 'Choisir le Département :'
+    value: Tous
     input: select
-    choices: ["Tous", "59", "66"]
+    choices:
+    - Tous
+    - '59'
+    - '66'
 ---
 
 <style type="text/css">
@@ -113,7 +116,7 @@ Le bloc de code suivant charge la totalité des données, applique le filtre dé
 
 ```{r calcul_et_kpi, echo=FALSE}
 # 'echo = FALSE' pour cacher ce bloc technique.
-fichier_data <- "df_nord_sud_COMBINE_COMPLET.csv"
+fichier_data <- "L:/BUT/SD/Promo 2024/talshawwa/ProjetRshiny/ProjetRshiny/ExtractionDPENordSud/df_nord_sud_COMBINE_COMPLET.csv"
 df_brut <- read_csv(fichier_data)
 
 # 1. Application des paramètres choisis par l'utilisateur
