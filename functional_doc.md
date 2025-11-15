@@ -1,18 +1,18 @@
-Documentation Fonctionnelle (Guide Utilisateur)
+Documentation Fonctionnelle: Guide Utilisateur
 
 Application d'Exploration DPE
 
 1. Objectif de l'Application
 
-En complément du rapport d'analyse statique, GreenTech Solutions met à la disposition d'Enedis un tableau de bord interactif (Application Shiny). Cet outil permet d'explorer les données de manière dynamique et de mener vos propres analyses exploratoires.
+En complément du rapport d'analyse statique, GreenTech Solutions met à votre disposition un tableau de bord interactif. Cet outil permet d'explorer les données de manière dynamique et de mener vos propres analyses exploratoires.
 
 2. Accès et Connexion
 
 L'application est protégée par un mot de passe pour garantir la confidentialité de l'analyse.
 
-Utilisateur : admin
+Utilisateur : greentech
 
-Mot de passe : on est pas les meilleurs mais pas les pires non plus
+Mot de passe : pas les meilleurs mais pas les pires non plus
 
 3. Fonctionnalités Principales
 
