@@ -1,5 +1,5 @@
 
-# RÉCUPÉRATION de données DPE
+# RÉCUPÉRATION DE DONNEES DPE
 
 
 # CHARGEMENT DES PACKAGES 
@@ -12,40 +12,39 @@ library(dplyr)
 install.packages("readr")
 library(readr)
 
-# --- 2. DÉFINITION DU RÉPERTOIRE DE TRAVAIL ---
-# !!! ATTENTION: Changez ceci pour VOTRE dossier (pas celui de 'viole' ou le dossier 'Temp') !!!
-# Par exemple: "C:/Users/alshawwa/Desktop/ExtractionDPENordSud"
+
+
 setwd("C:/Users/alshawwa/Desktop/Projet R shiny/ExtractionDPENordSud")
 
 
-# --- 3. DÉFINITION DES CIBLES ---
+
 
 # DÉFINITION MANUELLE DES CODES POSTAUX (Nord vs Sud)
 codes_nord <- c(59000, 59800, 59100, 59200, 59140)
 codes_sud <- c(66000, 66100, 66140, 66240, 66700)
 Code_postal <- c(codes_nord, codes_sud)
 
-# CREATION DU DATAFRAME FINAL COMBINÉ
+# CREATION DU DATAFRAME FINAL
 new_df=data.frame()
 
-# SPÉCIFICATION DE L'URL DE BASE DE L'API
+# L'URL DE BASE DE L'API
 base_api_url = "https://data.ademe.fr/data-fair/api/v1/datasets/"
 
 # Liste des datasets à interroger
 dataset_ids <- c("dpe03existant", "dpe02neuf")
 
-# Définition des colonnes COMMUNES (20)
+# Définition des colonnes COMMUNES
 select_fields_communs = paste(
-  "code_postal_ban", "nom_commune_ban", "code_departement_ban", # Localisation (3)
-  "etiquette_dpe", "etiquette_ges",                           # Performance Globale (2)
-  "conso_5_usages_par_m2_ep", "emission_ges_5_usages_par_m2",   # Performance Clé (2)
-  "conso_chauffage_ep", "conso_ecs_ep",                         # Consommations spécifiques (2)
-  "besoin_chauffage",                                           # Besoin (1)
-  "type_batiment", "surface_habitable_logement", "zone_climatique", # Caractéristiques Bâti (3)
-  "type_energie_principale_chauffage", "type_energie_principale_ecs", # Système (2)
-  "qualite_isolation_murs", "qualite_isolation_menuiseries",     # Isolation (2)
-  "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban", # Coordonnées Géo (2)
-  "date_reception_dpe",                                       # Date (1)
+  "code_postal_ban", "nom_commune_ban", "code_departement_ban", # Localisation
+  "etiquette_dpe", "etiquette_ges",                           # Performance Globale 
+  "conso_5_usages_par_m2_ep", "emission_ges_5_usages_par_m2",   # Performance Clé 
+  "conso_chauffage_ep", "conso_ecs_ep",                         # Consommations spécifiques
+  "besoin_chauffage",                                           # Besoin 
+  "type_batiment", "surface_habitable_logement", "zone_climatique", # Caractéristiques Bâti 
+  "type_energie_principale_chauffage", "type_energie_principale_ecs", # Système 
+  "qualite_isolation_murs", "qualite_isolation_menuiseries",     # Isolation 
+  "coordonnee_cartographique_x_ban", "coordonnee_cartographique_y_ban", # Coordonnées Géo
+  "date_reception_dpe",                                       # Date 
   sep=","
 )
 
@@ -54,24 +53,24 @@ select_fields_existant <- paste(select_fields_communs, "annee_construction", sep
 select_fields_neuf <- select_fields_communs
 
 
-# --- 4. BOUCLE PRINCIPALE (POUR TOUS LES CODES POSTAUX) ---
+# BOUCLE POUR TOUS LES CODES POSTAUX
 for (cp in Code_postal){
   
   print(paste("--- Début CP : ", cp, " ---"))
   
-  # Boucle secondaire sur les datasets (Existant et Neuf)
+# Boucle secondaire sur les datasets (Existant et Neuf)
   for (dataset_id in dataset_ids) {
     
     current_url <- paste0(base_api_url, dataset_id, "/lines")
     source_label <- ifelse(dataset_id == "dpe03existant", "Existant (dpe03)", "Neuf (dpe02)")
     print(paste("  -> Interrogation Dataset:", dataset_id, "(", source_label, ")"))
     
-    # CHOIX DE LA BONNE LISTE DE COLONNES
+# CHOIX DE LA BONNE LISTE DE COLONNES
     current_select_fields <- ifelse(dataset_id == "dpe03existant", 
                                     select_fields_existant, 
                                     select_fields_neuf)
     
-    # Paramètres de la requête
+# Paramètres de la requête
     params = list(
       select = current_select_fields, 
       size = 10000, 
@@ -79,22 +78,22 @@ for (cp in Code_postal){
       q_fields = "code_postal_ban"
     )
     
-    # Encodage des paramètres
+# Encodage des paramètres
     url_encoded = modify_url(current_url, query = params)
     
-    # Effectuer la requête
+# Effectuer la requête
     response = GET(url_encoded)
     
-    # Afficher le statut de la réponse
+# Afficher le statut de la réponse
     print(paste("  Statut réponse:", status_code(response)))
     
-    # Gestion d'erreur
+# Gestion d'erreur au cas où
     if (status_code(response) != 200) {
       print(paste("  Erreur API pour", dataset_id, "CP", cp, ". Statut:", status_code(response)))
       next 
     }
     
-    # Tentative de conversion JSON
+# conversion JSON
     content = tryCatch({
       fromJSON(rawToChar(response$content), flatten = TRUE) 
     }, error = function(e) {
@@ -104,11 +103,11 @@ for (cp in Code_postal){
     
     if (is.null(content)) { next }
     
-    # Afficher le nombre total de lignes disponibles
+# Afficher le nombre total de lignes disponibles
     taille_totale = ifelse(!is.null(content$total), content$total, 0)
     print(paste("  Taille totale dispo. pour", dataset_id, ":", taille_totale))
     
-    # Ajout des résultats
+# Ajout des résultats
     if(!is.null(content$results) && (is.data.frame(content$results) || length(content$results) > 0)) {
       
       results_df <- content$results
@@ -122,7 +121,7 @@ for (cp in Code_postal){
         print(paste("  Nombre de lignes ajoutées:", nrow(results_df)))
         results_df$type_source <- source_label
         
-        # HARMONISATION DES COLONNES
+# HARMONISATION DES COLONNES
         if (dataset_id == "dpe02neuf") {
           results_df$annee_construction <- NA_integer_ 
         }
@@ -140,18 +139,18 @@ for (cp in Code_postal){
     }
     
     print(paste("  --- Fin Dataset : ", dataset_id, " ---"))
-    # Pause
+    
     Sys.sleep(0.5) 
     
-  } # Fin boucle datasets
+  }
   
-  print(paste("--- Fin CP : ", cp, " ---"))
-  # Pause
+  print(paste("Fin CP : ", cp, ""))
+  
   Sys.sleep(1.0) 
   
-} # Fin boucle CPs
+}
 
-# --- 5. Nettoyage final avant sauvegarde ---
+# Nettoyage final avant sauvegarder
 print("Nettoyage final du dataframe combiné...")
 if (!is.null(new_df) && nrow(new_df) > 0) { 
   list_cols <- sapply(new_df, is.list)
@@ -172,17 +171,17 @@ if (!is.null(new_df) && nrow(new_df) > 0) {
 # Afficher dimensions
 print(paste("Dimension finale COMBINÉE (avant distinct):", ifelse(!is.null(new_df) && nrow(new_df)>0, nrow(new_df), 0), "lignes et", ifelse(!is.null(new_df) && ncol(new_df)>0, ncol(new_df), 0), "colonnes"))
 
-# --- 6. Déduplication et Sauvegarde ---
+# Déduplication et Sauvegarde
 if (!is.null(new_df) && nrow(new_df) > 0) {
   
-  # ---!!! NOUVELLE LIGNE AJOUTÉE ICI !!!---
+# NOUVELLE COLONNE AJOUTÉE
   new_df$typologie_logement <- ifelse(
     new_df$type_source == "Neuf (dpe02)", 
     "neuf", 
     "existant"
   )
   print("Nouvelle colonne 'typologie_logement' ajoutée.")
-  # ---!!! FIN DE L'AJOUT !!!---
+
   
   tryCatch({ 
     new_df = distinct(new_df) 
@@ -191,7 +190,7 @@ if (!is.null(new_df) && nrow(new_df) > 0) {
   
   print("Noms colonnes COMBINÉES (toutes):"); print(names(new_df)) 
   
-  # ---!!! NOM DE FICHIER MODIFIÉ ICI !!!---
+# NOM DE FICHIER MODIFIÉ
   file_name_csv <- "df_nord_sud_COMBINE_COMPLET.csv"
   
   tryCatch({
