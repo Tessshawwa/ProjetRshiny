@@ -1,9 +1,8 @@
-# ==============================================================================
-# SCRIPT R POUR LA RÉCUPÉRATION COMBINÉE D'ÉCHANTILLONS DE DONNÉES DPE
-# COMBINE: Logements Existants (dpe03existant) ET Neufs (dpe02neuf)
-# ==============================================================================
 
-# --- 1. CHARGEMENT DES PACKAGES ---
+# RÉCUPÉRATION de données DPE
+
+
+# CHARGEMENT DES PACKAGES 
 install.packages("httr")
 library(httr)
 install.packages("jsonlite")
