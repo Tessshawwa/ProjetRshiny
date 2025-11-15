@@ -81,9 +81,9 @@ library(ggplot2)
 library(readr)
 library(lubridate)
 library(scales)
-library(knitr)     # Pour kable
-library(forcats)   # Pour le pie chart
-library(ggrepel)   # <-- AJOUTÉ POUR FIXER LES ÉTIQUETTES
+library(knitr)     
+library(forcats)   
+library(ggrepel)   
 ```
 
 
@@ -137,7 +137,7 @@ Le bloc de code suivant charge la totalité des données et calcule les indicate
 ```{r calcul_et_kpi, echo=FALSE}
 # 'echo = FALSE' : On cache ce bloc technique dans le rapport final.
 # On dit à R de chercher le CSV "un niveau au-dessus" (dans le dossier parent)
-fichier_data <- "C:/Users/alshawwa/Documents/ProjetRshiny/ExtractionDPENordSud/df_nord_sud_COMBINE_COMPLET.csv"
+fichier_data <- "https://raw.githubusercontent.com/Tessshawwa/ProjetRshiny/main/ExtractionDPENordSud/df_nord_sud_COMBINE_COMPLET.csv"
 df_brut <- read_csv(fichier_data)
 
 # 1. On analyse TOUTES les données (plus de filtre params)
