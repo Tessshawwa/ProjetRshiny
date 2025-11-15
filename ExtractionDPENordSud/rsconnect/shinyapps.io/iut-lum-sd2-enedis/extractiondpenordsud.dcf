@@ -1,10 +1,10 @@
-name: projetrshiny
+name: extractiondpenordsud
 title:
 username: iut-lum-sd2-enedis
 account: iut-lum-sd2-enedis
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 16075924
-bundleId: 11183298
-url: https://iut-lum-sd2-enedis.shinyapps.io/projetrshiny/
+appId: 16075968
+bundleId: 11183332
+url: https://iut-lum-sd2-enedis.shinyapps.io/extractiondpenordsud/
 version: 1
