@@ -20,18 +20,18 @@ output:
 ---
 
 <style type="text/css">
-/* --- 1. Police principale --- */
+/* Police principale */
 body {
   font-family: "Times New Roman", Times, serif;
   font-size: 1.3em; /* Police du corps de texte (plus grande) */
 }
 
-/* --- 2. Centrer le bloc de titre --- */
+/* Centrer le bloc de titre */
 #header {
   text-align: center;
 }
 
-/* --- 3. Style du Titre Principal (Rouge, Gras, Belle Police) --- */
+/* Style du Titre Principal (Rouge, Gras, Belle Police) */
 #header h1 {
   font-family: "Times New Roman", Times, serif; /* Police Times pour tout */
   font-weight: bold;           /* En gras */
@@ -39,12 +39,12 @@ body {
   font-size: 2.5em;            /* Plus grand */
 }
 
-/* --- 4. S'assurer que les titres de section sont en gras --- */
+/* 4. S'assurer que les titres de section sont en gras */
 h1, h2 {
   font-weight: bold;
 }
 
-/* --- 5. Titre du Sommaire --- */
+/* 5. Titre du Sommaire */
 #TOC::before {
   content: "Sommaire";
   font-size: 1.5em;
@@ -55,12 +55,12 @@ h1, h2 {
   margin-bottom: 15px;
 }
 
-/* --- 6. Titres 2 en Noir --- */
+/* Titres 2 en Noir */
 h2 {
   color: black !important; /* Forcer le H2 (ex: "Problématique") en noir */
 }
 
-/* --- 7. Logos --- */
+/* Logos */
 .logo-container {
   display: flex;
   justify-content: center; /* Centre les logos */
