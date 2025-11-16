@@ -73,4 +73,6 @@ Double-cliquez sur ce fichier pour l'ouvrir dans votre navigateur (ex: Chrome).
 
 Vous verrez le rapport final, mis en forme, avec tous les graphiques et analyses.
 
+Voici le lien de la vidéo présentant le démonstration et le déploiememnt de l'appli :
+https://youtu.be/GJGuAx84W7I?si=0epGsW0-OWYy4g66
 
